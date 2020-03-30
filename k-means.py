@@ -21,7 +21,6 @@ class KMeansTF(object):
         self.cluster_centers = None
         self.distance = None
         self.predict_center_ids = None
-        self.error = None
         self.num_list = None
         self.sum_list = None
         self.center_list = None
@@ -33,9 +32,12 @@ class KMeansTF(object):
 
     def build_graph(self):
         with self.graph.as_default():
+            # 训练数据输入
             self.inputs = tf.placeholder(dtype=tf.float32, shape=(self.batch_size, self.dim), name="inputs")
+            # 聚类中心
             self.cluster_centers = tf.get_variable(dtype=tf.float32, shape=(self.num_cluster, self.dim),
                                                    name="cluster_centers")
+            # 计算输入数据到各个中心点的距离
             center_distance = tf.reshape(
                 tf.sqrt(
                     tf.reduce_sum(
@@ -49,11 +51,13 @@ class KMeansTF(object):
             )
             closest_center = tf.nn.top_k(-1*center_distance, 1)
             indices = closest_center.indices
+
+            # 最近中心点的距离
             self.distance = -1*closest_center.values
-
+            # 最近中心点编号
             self.predict_center_ids = tf.reshape(indices, [self.batch_size])
-            self.error = tf.reduce_mean(tf.reshape(self.distance, [self.batch_size]), axis=0)
 
+            # 将属于同一中心点的数据求和
             num_list, sum_list = [], []
             for c_id in range(self.num_cluster):
                 is_belong = tf.equal(self.predict_center_ids, c_id)
@@ -105,13 +109,13 @@ class KMeansTF(object):
                     # dist_list = self.calculate_distance(batch, center_list)
                     cluster_size += num_list
                     vec_sum += sum_list
+                # 更新中心点
                 nxt_center_list = vec_sum / np.reshape(cluster_size, (self.num_cluster, 1))
-
                 diff = np.sum(np.abs(center_list-nxt_center_list)) / self.num_cluster
+                center_list = nxt_center_list
                 if diff <= self.threshold:
                     break
 
-                center_list = nxt_center_list
         self.center_list = center_list
 
     def train_batch_iterator(self):
