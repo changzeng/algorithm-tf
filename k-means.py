@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+# tensorflow实现kmeans
+
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
