@@ -37,8 +37,8 @@ class KMeansTF(object):
             # 训练数据输入
             self.inputs = tf.placeholder(dtype=tf.float32, shape=(self.batch_size, self.dim), name="inputs")
             # 聚类中心
-            self.cluster_centers = tf.get_variable(dtype=tf.float32, shape=(self.num_cluster, self.dim),
-                                                   name="cluster_centers")
+            self.cluster_centers = tf.placeholder(dtype=tf.float32, shape=(self.num_cluster, self.dim),
+                                                  name="cluster_centers")
             # 计算输入数据到各个中心点的距离
             center_distance = tf.reshape(
                 tf.sqrt(
