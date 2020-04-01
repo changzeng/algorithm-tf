@@ -12,6 +12,12 @@ class Distance(object):
 
         self.vec1 = None
         self.vec2 = None
+        self.euler_dist = None
+        self.manhattan_dist = None
+        self.chebyshev_dist = None
+        self.cosine_dist = None
+
+        self.build_graph()
 
     def build_graph(self):
         with tf.name_scope("input_layer"):
@@ -59,5 +65,3 @@ class Distance(object):
                 )
                 , tf.multiply(vec1_norm, vec2_norm)
             )
-
-
